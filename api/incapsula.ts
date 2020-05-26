@@ -3,33 +3,30 @@
 // In order to obtain a cookie, Incapsula runs Javascript tests to see what the browser.
 // Mirromation starts Puppeteer, a headless browser, to automatically do these tests.
 
-import { SocksProxyAgent } from 'socks-proxy-agent';
 import puppeteer from 'puppeteer';
 
-const socksProxy = 'socks5h://localhost:9050';
-export const torAgent: SocksProxyAgent = new SocksProxyAgent(socksProxy);
-let incapsulaCookie: string = '';
+const API_ENDPOINT = process.env.API_ENDPOINT ? process.env.API_ENDPOINT : '';
+let cookies: string = '';
 
-export const getIncapsulaCookie = () : string => incapsulaCookie;
+export const getCookies = (): string => cookies;
 
 // starts the puppeteer browser with the tor proxy and starts the cookie fetch loop
-export function puppeteerLaunch(): void {
-  puppeteer.launch({
-    args: [
-      `--proxy-server=${socksProxy}`,
-    ],
-  }).then((browser: puppeteer.Browser) => {
-    // fetches the incapsula cookie every 6 minutes and stores it in incapsulaCookie.
-    (function getIncapsulaCookieLoop() {
-      browser.newPage().then((page: puppeteer.Page) => {
-        page.goto('https://funimation.com').then(() => {
-          page.cookies().then((cookies: Array<puppeteer.Cookie>) => {
-            const possibleCookie: puppeteer.Cookie | undefined = cookies.find((cookie) => cookie.name.startsWith('incap_ses'));
-            incapsulaCookie = possibleCookie ? possibleCookie.value : '';
-            setTimeout(getIncapsulaCookieLoop, 360000);
+export function puppeteerLaunch(): Promise<string> {
+  return new Promise((res) => {
+    puppeteer.launch().then((browser: puppeteer.Browser) => {
+      // fetches the incapsula cookie every 6 minutes and stores it in incapsulaCookie.
+      (function getIncapsulaCookieLoop() {
+        browser.newPage().then((page: puppeteer.Page) => {
+          page.goto(API_ENDPOINT).then(() => {
+            page.cookies().then((currentCookies: Array<puppeteer.Cookie>) => {
+              cookies = currentCookies.reduce<string>((accumulator, cookie) => `${accumulator}${cookie.name}=${cookie.value}; `, '');
+              cookies = cookies.slice(0, -2);
+              setTimeout(getIncapsulaCookieLoop, 360000);
+              res(cookies);
+            });
           });
         });
-      });
-    }());
+      }());
+    });
   });
 }
