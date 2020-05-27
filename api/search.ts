@@ -7,7 +7,7 @@ const { API_ENDPOINT } = process.env;
 export const incapsulaToken = null;
 
 // ensure search term is valid so we don't get funky ssrf
-const validSearchTerm = /^[a-zA-Z0-9_-]*$/;
+const validSearchTerm: RegExp = /^[a-zA-Z0-9_-]*$/;
 
 export default function searchForTerm(term: string) {
   return new Promise((resolve, reject) => {
@@ -20,7 +20,11 @@ export default function searchForTerm(term: string) {
         Cookie: getCookies(),
       },
     }).then((res) => {
-      const $ = cheerio.load(res.data);
+      const $: CheerioStatic = cheerio.load(res.data);
+      resolve($('ul').children().map((_, { firstChild }) => ({
+        link: firstChild.attribs.href,
+        title: firstChild.firstChild.data,
+      })).get());
     }).catch((err) => {
       reject(err);
     });
