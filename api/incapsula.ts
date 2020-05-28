@@ -4,9 +4,10 @@
 // Mirromation starts Puppeteer, a headless browser, to automatically do these tests.
 
 import puppeteer from 'puppeteer';
+import config from '../config/config.json';
 
-const API_ENDPOINT = process.env.API_ENDPOINT || 'https://www.funimation.com';
-const USER_AGENT = process.env.USER_AGENT || 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36';
+const { apiEndpoint, userAgent } = config;
+
 let cookies: string = '';
 
 export const getCookies = (): string => cookies;
@@ -15,7 +16,7 @@ export const getCookies = (): string => cookies;
 export function puppeteerLaunch(): Promise<string> {
   return new Promise((resolve, reject) => {
     puppeteer.launch({
-      headless: false,
+      headless: true,
     }).then((browser: puppeteer.Browser) => {
       // fetches the incapsula cookie every 6 minutes and stores it in incapsulaCookie.
       (async function getIncapsulaCookieLoop(): Promise<void> {
@@ -24,8 +25,8 @@ export function puppeteerLaunch(): Promise<string> {
           reject(new Error('Could not get page.'));
           return;
         }
-        await page.setUserAgent(USER_AGENT);
-        await page.goto(API_ENDPOINT);
+        await page.setUserAgent(userAgent);
+        await page.goto(apiEndpoint);
         const currentCookies: Array<puppeteer.Cookie> = await page.cookies();
         cookies = currentCookies.reduce<string>((accumulator, cookie) => `${accumulator}${cookie.name}=${cookie.value}; `, '');
         cookies = cookies.slice(0, -2);

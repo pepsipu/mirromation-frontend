@@ -1,11 +1,12 @@
 import axios from 'axios';
 import { getCookies } from './incapsula';
+import config from '../config/config.json';
 
-const { API_ENDPOINT } = process.env;
+const { apiEndpoint } = config;
 
 export default function getEpisodeStreamingInfo(episodeId: number | string): Promise<EpisodeStreamingSources> {
   return new Promise((resolve, reject) => {
-    axios.get(`${API_ENDPOINT}/api/showexperience/${episodeId}`, {
+    axios.get(`${apiEndpoint}/api/showexperience/${episodeId}`, {
       params: {
         pinst_id: 'checkUrArgs',
       },

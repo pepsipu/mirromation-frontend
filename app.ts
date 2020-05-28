@@ -9,8 +9,7 @@ const app: express.Application = express();
 app.use(express.json());
 app.use(morgan('dev'));
 
-puppeteerLaunch().then((cookie) => {
-});
+puppeteerLaunch().then(() => {});
 
 app.listen(process.env.PORT || 3000, () => {
 
