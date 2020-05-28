@@ -5,7 +5,8 @@
 
 import puppeteer from 'puppeteer';
 
-const API_ENDPOINT = process.env.API_ENDPOINT ? process.env.API_ENDPOINT : '';
+const API_ENDPOINT = process.env.API_ENDPOINT || 'https://www.funimation.com';
+const USER_AGENT = process.env.USER_AGENT || 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36';
 let cookies: string = '';
 
 export const getCookies = (): string => cookies;
@@ -17,23 +18,21 @@ export function puppeteerLaunch(): Promise<string> {
       headless: false,
     }).then((browser: puppeteer.Browser) => {
       // fetches the incapsula cookie every 6 minutes and stores it in incapsulaCookie.
-      (function getIncapsulaCookieLoop() {
-        browser.pages().then((pages: puppeteer.Page[]) => {
-          const page = pages.pop();
-          if (!page) {
-            reject(new Error('Could not get page.'));
-            return;
-          }
-          page.goto(API_ENDPOINT).then(() => {
-            page.cookies().then((currentCookies: Array<puppeteer.Cookie>) => {
-              cookies = currentCookies.reduce<string>((accumulator, cookie) => `${accumulator}${cookie.name}=${cookie.value}; `, '');
-              cookies = cookies.slice(0, -2);
-              setTimeout(getIncapsulaCookieLoop, 360000 + Math.floor(Math.random() * 20000));
-              resolve(cookies);
-            });
-          });
-        });
-      }());
+      (async function getIncapsulaCookieLoop(): Promise<void> {
+        const page = (await browser.pages()).pop();
+        if (!page) {
+          reject(new Error('Could not get page.'));
+          return;
+        }
+        await page.setUserAgent(USER_AGENT);
+        await page.goto(API_ENDPOINT);
+        const currentCookies: Array<puppeteer.Cookie> = await page.cookies();
+        cookies = currentCookies.reduce<string>((accumulator, cookie) => `${accumulator}${cookie.name}=${cookie.value}; `, '');
+        cookies = cookies.slice(0, -2);
+        setTimeout(getIncapsulaCookieLoop, 360000 + Math.floor(Math.random() * 20000));
+      }()).then(() => {
+        resolve(cookies);
+      });
     });
   });
 }
