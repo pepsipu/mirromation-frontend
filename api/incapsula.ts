@@ -12,13 +12,18 @@ export const getCookies = (): string => cookies;
 
 // starts the puppeteer browser with the tor proxy and starts the cookie fetch loop
 export function puppeteerLaunch(): Promise<string> {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     puppeteer.launch({
       headless: false,
     }).then((browser: puppeteer.Browser) => {
       // fetches the incapsula cookie every 6 minutes and stores it in incapsulaCookie.
       (function getIncapsulaCookieLoop() {
-        browser.newPage().then((page: puppeteer.Page) => {
+        browser.pages().then((pages: puppeteer.Page[]) => {
+          const page = pages.pop();
+          if (!page) {
+            reject(new Error('Could not get page.'));
+            return;
+          }
           page.goto(API_ENDPOINT).then(() => {
             page.cookies().then((currentCookies: Array<puppeteer.Cookie>) => {
               cookies = currentCookies.reduce<string>((accumulator, cookie) => `${accumulator}${cookie.name}=${cookie.value}; `, '');
