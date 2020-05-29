@@ -12,7 +12,8 @@ let cookies: string = '';
 
 export const getCookies = (): string => cookies;
 
-// starts the puppeteer browser with the tor proxy and starts the cookie fetch loop
+// starts the puppeteer browser and starts the cookie fetch loop
+// @params
 export function puppeteerLaunch(): Promise<string> {
   return new Promise((resolve, reject) => {
     puppeteer.launch({

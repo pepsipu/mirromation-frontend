@@ -4,7 +4,7 @@ import config from '../config/config.json';
 
 const { apiEndpoint } = config;
 
-export default function getEpisodeStreamingInfo(episodeId: number | string): Promise<EpisodeStreamingSources> {
+function getEpisodeStreamingInfo(episodeId: number | string): Promise<EpisodeStreamingSources> {
   return new Promise((resolve, reject) => {
     axios.get(`${apiEndpoint}/api/showexperience/${episodeId}`, {
       params: {
@@ -21,11 +21,13 @@ export default function getEpisodeStreamingInfo(episodeId: number | string): Pro
   });
 }
 
-export interface EpisodeStreamingSources {
+export default getEpisodeStreamingInfo;
+
+interface EpisodeStreamingSources {
   items?: (ItemsEntity)[] | null;
   watchHistorySaveInterval: number;
 }
-export interface ItemsEntity {
+interface ItemsEntity {
   showAds: boolean;
   src: string;
   kind: string;
@@ -35,7 +37,7 @@ export interface ItemsEntity {
   isPromo: boolean;
   aips?: (AipsEntity)[] | null;
 }
-export interface AipsEntity {
+interface AipsEntity {
   in: number;
   out: number;
 }
