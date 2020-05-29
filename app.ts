@@ -17,5 +17,5 @@ puppeteerLaunch().then((cookies) => {
 });
 
 app.listen(process.env.PORT || 3000, () => {
-
+  logger.info(`Express server has started listening on port ${chalk.red(process.env.PORT || 3000)}.`);
 });
