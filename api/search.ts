@@ -1,6 +1,6 @@
 import axios from 'axios';
 import cheerio from 'cheerio';
-import { getCookies } from './incapsula';
+import { getCookies } from 'api/incapsula';
 
 const { API_ENDPOINT } = process.env;
 export const incapsulaToken = null;
