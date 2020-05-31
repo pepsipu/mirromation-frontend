@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { getCookies } from 'api/incapsula';
-import config from 'config/config.json';
+import { getCookies } from './incapsula';
+import config from '../config/config.json';
 
 const { apiEndpoint } = config;
 

@@ -1,14 +1,16 @@
 import express from 'express';
 import chalk from 'chalk';
 
-import 'config/env';
-import { expressLogger, logger } from 'config/winston';
-import { puppeteerLaunch } from 'api/incapsula';
+import './config/env';
+import { expressLogger, logger } from './config/winston';
+import { puppeteerLaunch } from './api/incapsula';
+import router from './routes/router';
 
 const app: express.Application = express();
 const port: number = +(process.env.PORT || 3000);
 
 app.use(express.json());
+app.use('/api', router);
 app.use(expressLogger);
 
 puppeteerLaunch().then((cookies) => {

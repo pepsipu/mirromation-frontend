@@ -1,11 +1,8 @@
 import axios from 'axios';
 import cheerio from 'cheerio';
-import { getCookies } from 'api/incapsula';
+import { getCookies } from './incapsula';
 
 const { API_ENDPOINT } = process.env;
-export const incapsulaToken = null;
-
-// ensure search term is valid so we don't get funky ssrf
 
 export default function searchForTerm(term: string): Promise<Object> {
   return new Promise((resolve, reject) => {
