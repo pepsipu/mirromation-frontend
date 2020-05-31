@@ -1,21 +1,22 @@
 import express from 'express';
-import morgan from 'morgan';
 import chalk from 'chalk';
 
 import './config/env';
-import logger from './config/winston';
+import { expressLogger, logger } from './config/winston';
 import { puppeteerLaunch } from './api/incapsula';
 
 const app: express.Application = express();
+const port: number = +(process.env.PORT || 3000);
 
 app.use(express.json());
-app.use(morgan('dev', {
-}));
+app.use(expressLogger);
 
 puppeteerLaunch().then((cookies) => {
   logger.info(`Puppeteer has launched, receiving cookies of length ${chalk.cyan(cookies.length)}.`);
+}).catch((error) => {
+  logger.error(`Could not fetch cookies with Puppeteer: ${error}`);
 });
 
-app.listen(process.env.PORT || 3000, () => {
-  logger.info(`Express server has started listening on port ${chalk.red(process.env.PORT || 3000)}.`);
+app.listen(port, () => {
+  logger.info(`Express server has started listening on port ${chalk.red(port)}.`);
 });

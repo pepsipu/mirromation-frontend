@@ -13,11 +13,10 @@ let cookies: string = '';
 export const getCookies = (): string => cookies;
 
 // starts the puppeteer browser and starts the cookie fetch loop
-// @params
 export function puppeteerLaunch(): Promise<string> {
   return new Promise((resolve, reject) => {
     puppeteer.launch({
-      headless: true,
+      headless: process.env.HEADLESS === 'true',
     }).then((browser: puppeteer.Browser) => {
       // fetches the incapsula cookie every 6 minutes and stores it in incapsulaCookie.
       (async function getIncapsulaCookieLoop(): Promise<void> {
@@ -27,7 +26,14 @@ export function puppeteerLaunch(): Promise<string> {
           return;
         }
         await page.setUserAgent(userAgent);
-        await page.goto(apiEndpoint);
+        try {
+          await page.goto(apiEndpoint).catch((error) => {
+            reject(error);
+            throw error;
+          });
+        } catch (e) {
+          return;
+        }
         const currentCookies: Array<puppeteer.Cookie> = await page.cookies();
         cookies = currentCookies.reduce<string>((accumulator, cookie) => `${accumulator}${cookie.name}=${cookie.value}; `, '');
         cookies = cookies.slice(0, -2);
