@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "tsc": "tsc",
-    "run": "npm run tsc && node app.js"
+    "run": "npm run tsc && node build/app.js"
   },
   "keywords": [],
   "author": "",

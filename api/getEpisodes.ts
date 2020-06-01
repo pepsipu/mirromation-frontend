@@ -4,7 +4,7 @@ import config from '../config/config.json';
 
 const { apiEndpoint } = config;
 
-export default function getTitleInformation(titleId: number | string, season: number | string = '1'): Promise<Title> {
+export default function getEpisodesFromTitleId(titleId: number | string, season: number | string = '1'): Promise<Title> {
   return new Promise((resolve, reject) => {
     axios.get(`${apiEndpoint}/api/episodes`, {
       params: {
