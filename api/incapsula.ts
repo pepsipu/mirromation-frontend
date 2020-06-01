@@ -1,7 +1,7 @@
 // Funimation uses Incapsula in order to prevent DDoS attacks, caching, and security.
 // Requests that do not have the Incapsula cookie will be denied.
 // In order to obtain a cookie, Incapsula runs Javascript tests to see what the browser.
-// Mirromation starts Puppeteer, a headless browser, to automatically do these tests.
+// Osimation starts Puppeteer, a headless browser, to automatically do these tests.
 
 import puppeteer from 'puppeteer';
 import config from '../config/config.json';
