@@ -1,4 +1,4 @@
 extends:
   - 'airbnb-typescript'
 parserOptions:
-  project: './tsconfig.json'
+  project: './client/tsconfig.json'
