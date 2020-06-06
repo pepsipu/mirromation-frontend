@@ -1,5 +1,6 @@
 import express from 'express';
 import searchForTerm from '../api/search';
+import { logger } from '../config/winston';
 
 export default function register(router: express.Router) {
   router.get('/search', (req, res) => {
@@ -12,6 +13,11 @@ export default function register(router: express.Router) {
     searchForTerm(term).then((searchResults) => {
       res.send(searchResults);
       res.end();
+    }).catch((e) => {
+      res.status(500);
+      res.send({ err: 'something went wrong' });
+      res.end();
+      logger.error(`err: ${e}`);
     });
   });
 }

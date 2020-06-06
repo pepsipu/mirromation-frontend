@@ -7,25 +7,29 @@ const { apiEndpoint } = config;
 
 export default function searchForTerm(term: string): Promise<Object> {
   return new Promise((resolve, reject) => {
-    axios.get(`${apiEndpoint}/pred-search/${encodeURIComponent(term)}`, {
+    axios.get(`${apiEndpoint}/search`, {
+      params: {
+        q: term,
+        cat: 'shows',
+        categoryType: 'Series',
+      },
       headers: {
         Cookie: getCookies(),
       },
     }).then((res) => {
       const searchResultDocument: CheerioStatic = cheerio.load(res.data);
-      const preSearchResults = searchResultDocument('ul').children().map((_, { firstChild }) => {
-        const title = firstChild.firstChild.data;
-        if (title && title.includes('Show')) {
-          const splitUrl = firstChild.attribs.href.split('/');
-          const rawName = splitUrl[splitUrl.length - 2];
-          return {
-            rawName,
-            name: title.slice(0, -8),
-          };
-        }
-        return null;
-      }).get();
-      resolve(preSearchResults);
+      const titles = searchResultDocument('.show-title');
+      if (!titles.first().attr('href')) {
+        resolve({});
+        return;
+      }
+      resolve(titles.map((_, title) => {
+        const link = title.attribs.href;
+        return {
+          name: title.firstChild.data,
+          rawName: link.substring(7, link.indexOf('/', 7)),
+        };
+      }).get());
     }).catch((err) => {
       reject(err);
     });
