@@ -18,7 +18,7 @@
     "@types/logform": "^1.10.1",
     "@types/morgan": "^1.9.0",
     "@types/puppeteer": "^3.0.0",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "chalk": "^4.0.0",
     "cheerio": "^1.0.0-rc.3",
     "concurrently": "^5.2.0",
